@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">PixE</string>
+    <string name="take_photo_label">Take a Photo!</string>
+    <string name="choose_picture_label">Choose a Picture!</string>
+    <string name="about_label">About</string>
+    <string name="donate_label">Donate</string>
+    <string name="upgrade_label">Upgrade</string>
+    <string name="generate_label">Generate</string>
+    <string name="algorithm_label">Algorithm</string>
+    <string name="orientation_label">Orientation</string>
 </resources>

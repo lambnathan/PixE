@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/about_button"
+        android:title="@string/about_label"/>
+    <item
+        android:id="@+id/donate_button"
+        android:title="@string/donate_label"/>
+    <item
+        android:id="@+id/upgrade_button"
+        android:title="@string/upgrade_label"/>
+
+</menu>
