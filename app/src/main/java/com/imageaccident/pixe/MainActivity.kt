@@ -1,5 +1,7 @@
 package com.imageaccident.pixe
 
+import android.content.Intent
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
@@ -39,6 +41,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         algorithmButton = findViewById(R.id.algorithm_button)
         orientationButton = findViewById(R.id.orientation_button)
 
+        toolbar.setTitleTextColor(Color.WHITE)
         setSupportActionBar(toolbar)
         toggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, 0, 0)
         drawerLayout.addDrawerListener(toggle)
@@ -56,8 +59,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             checkGenerateButton()
         }
         generateButton.setOnClickListener{
-            Toast.makeText(baseContext, "New image will be generated!", Toast.LENGTH_SHORT).show()
-            // booleans to make this work or not
+            startActivity(Intent(this, GeneratedActivity::class.java))
         }
 
         generateButton.visibility = View.INVISIBLE
@@ -125,7 +127,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
         when (menuItem.itemId) {
             R.id.about_button -> {
-                Toast.makeText(this, "About", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(baseContext, AboutActivity::class.java))
             }
             R.id.donate_button -> {
                 Toast.makeText(this, "Thanks for the donation!", Toast.LENGTH_SHORT).show()

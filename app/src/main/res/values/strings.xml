@@ -13,5 +13,8 @@
     <string name="orientation_vertical">Vertical</string>
     <string name="orientation_horizontal">Horizontal</string>
     <string name="orientation_label">Orientation</string>
+    <string name="reset_label">Reset</string>
+    <string name="save_label">Save</string>
+    <string name="share_label">Share</string>
     <string name="about_string">Image Accident has a long, proud history starting in January 2020. We develop wholesome, nutritious apps using only the finest hand-picked bits. Check out our donate page to give us a hand!</string>
 </resources>
