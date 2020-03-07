@@ -9,5 +9,4 @@
     <item
         android:id="@+id/upgrade_button"
         android:title="@string/upgrade_label"/>
-
 </menu>
