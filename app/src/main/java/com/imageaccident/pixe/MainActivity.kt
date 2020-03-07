@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Button
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
@@ -17,6 +18,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var takePhotoButton : Button
     private lateinit var choosePictureButton : Button
     private lateinit var generateButton : Button
+    private lateinit var algorithmButton: Button
+    private lateinit var orientationButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,6 +29,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         takePhotoButton = findViewById(R.id.take_photo_button)
         choosePictureButton = findViewById(R.id.choose_picture_button)
         generateButton = findViewById(R.id.generate_button)
+        algorithmButton = findViewById(R.id.algorithm_button)
+        orientationButton = findViewById(R.id.orientation_button)
 
         setSupportActionBar(toolbar)
         toggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, 0, 0)
@@ -41,6 +46,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             Toast.makeText(baseContext, "New image will be generated!", Toast.LENGTH_SHORT).show()
             // booleans to make this work or not
         }
+
+        algorithmButton.setOnClickListener{ showAlgoMenu(algorithmButton)}
+        orientationButton.setOnClickListener { showOrientationMenu(orientationButton)}
+    }
+
+    private fun showAlgoMenu(button: Button){
+        val popupMenu = PopupMenu(this, button)
+        popupMenu.menuInflater.inflate(R.menu.algorithm_popup_menu, popupMenu.menu)
+        popupMenu.show()
+    }
+
+    private fun showOrientationMenu(button: Button){
+        val popupMenu = PopupMenu(this, button)
+        popupMenu.menuInflater.inflate(R.menu.orientation_pop_menu, popupMenu.menu)
+        popupMenu.show()
     }
 
     override fun onNavigationItemSelected(menuItem: MenuItem): Boolean {

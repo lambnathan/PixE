@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/sort_rgb"
+        android:title="@string/algo_rgb"/>
+    <item
+        android:id="@+id/sort_hue"
+        android:title="@string/algo_hue"/>
+    <item
+        android:id="@+id/sort_gamma"
+        android:title="@string/algo_gamma"/>
+
+</menu>
