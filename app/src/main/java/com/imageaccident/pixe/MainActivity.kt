@@ -41,8 +41,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         takePhotoButton.setOnClickListener{Toast.makeText(baseContext, "User will be directed to Camera app to take photo", Toast.LENGTH_SHORT).show()}
         choosePictureButton.setOnClickListener{Toast.makeText(baseContext, "User will be directed to Photo Gallery app to choose picture", Toast.LENGTH_SHORT).show()}
         generateButton.setOnClickListener{
-            Toast.makeText(baseContext, "New image will be generated!", Toast.LENGTH_SHORT).show()
-            // booleans to make this work or not
+            startActivity(Intent(this, GeneratedActivity::class.java))
         }
     }
 
@@ -50,7 +49,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (menuItem.itemId) {
             R.id.about_button -> {
                 startActivity(Intent(baseContext, AboutActivity::class.java))
-                Toast.makeText(this, "About", Toast.LENGTH_SHORT).show()
             }
             R.id.donate_button -> {
                 Toast.makeText(this, "Thanks for the donation!", Toast.LENGTH_SHORT).show()
