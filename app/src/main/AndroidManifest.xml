@@ -16,9 +16,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AboutActivity">
+        <activity android:name=".AboutFragment">
         </activity>
-        <activity android:name=".GeneratedActivity">
+        <activity android:name=".GeneratedFragment">
         </activity>
     </application>
 
