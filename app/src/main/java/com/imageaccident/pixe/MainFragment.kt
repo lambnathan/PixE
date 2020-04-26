@@ -10,7 +10,9 @@ import android.widget.Button
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.imageaccident.pixe.data.ImageCreation
 import com.imageaccident.pixe.data.ImageCreationFragment
+import com.imageaccident.pixe.data.ImageRepository
 
 class MainFragment :  Fragment(){
     private val logTag = "ImageAccident.MainFrag"
@@ -20,10 +22,13 @@ class MainFragment :  Fragment(){
     private lateinit var algorithmButton: Button
     private lateinit var orientationButton: Button
     private lateinit var historyButton: Button
+    private lateinit var imageRepository: ImageRepository
 
     private var hasChosenPicture: Boolean = false
     private var hasChosenAlgorithm: Boolean = false
     private var hasChosenOrientation: Boolean = false
+    private var algorithm = ""
+    private var orientation = ""
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,6 +44,8 @@ class MainFragment :  Fragment(){
         orientationButton = view.findViewById(R.id.orientation_button)
         historyButton = view.findViewById(R.id.history_button)
 
+        imageRepository = ImageRepository.getInstance(requireContext())
+
         takePhotoButton.setOnClickListener{
             Toast.makeText(requireContext(), "User will be directed to Camera app to take photo", Toast.LENGTH_SHORT).show()
             hasChosenPicture = true
@@ -50,6 +57,12 @@ class MainFragment :  Fragment(){
             checkGenerateButton()
         }
         generateButton.setOnClickListener{
+            val newCreation = ImageCreation(
+                algorithm = algorithm,
+                orientation = orientation,
+                version = "FREE")
+            imageRepository.addImageCreation(newCreation)
+
             val fragment = GeneratedFragment()
             requireActivity().supportFragmentManager
                 .beginTransaction()
@@ -91,16 +104,19 @@ class MainFragment :  Fragment(){
                 R.id.sort_rgb ->{
                     Toast.makeText(requireContext(), "You Clicked : " + item.title, Toast.LENGTH_SHORT).show()
                     hasChosenAlgorithm = true
+                    algorithm = "RGB"
                     checkGenerateButton()
                 }
                 R.id.sort_hue -> {
                     Toast.makeText(requireContext(), "You Clicked : " + item.title, Toast.LENGTH_SHORT).show()
                     hasChosenAlgorithm = true
+                    algorithm = "HUE"
                     checkGenerateButton()
                 }
                 R.id.sort_gamma -> {
                     Toast.makeText(requireContext(), "You Clicked : " + item.title, Toast.LENGTH_SHORT).show()
                     hasChosenAlgorithm = true
+                    algorithm = "GAMMA"
                     checkGenerateButton()
                 }
             }
@@ -118,11 +134,13 @@ class MainFragment :  Fragment(){
                 R.id.orientation_horizontal ->{
                     Toast.makeText(requireContext(), "You Clicked : " + item.title, Toast.LENGTH_SHORT).show()
                     hasChosenOrientation = true
+                    orientation = "Horizontal"
                     checkGenerateButton()
                 }
                 R.id.orientation_vertical -> {
                     Toast.makeText(requireContext(), "You Clicked : " + item.title, Toast.LENGTH_SHORT).show()
                     hasChosenOrientation = true
+                    orientation = "Vertical"
                     checkGenerateButton()
                 }
             }
