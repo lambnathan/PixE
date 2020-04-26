@@ -1,6 +1,7 @@
 package com.imageaccident.pixe
 
 import android.os.Bundle
+import android.service.autofill.FillEventHistory
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,7 @@ import android.widget.Button
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.imageaccident.pixe.data.ImageCreationFragment
 
 class MainFragment :  Fragment(){
     private val logTag = "ImageAccident.MainFrag"
@@ -17,6 +19,7 @@ class MainFragment :  Fragment(){
     private lateinit var generateButton : Button
     private lateinit var algorithmButton: Button
     private lateinit var orientationButton: Button
+    private lateinit var historyButton: Button
 
     private var hasChosenPicture: Boolean = false
     private var hasChosenAlgorithm: Boolean = false
@@ -34,6 +37,7 @@ class MainFragment :  Fragment(){
         generateButton = view.findViewById(R.id.generate_button)
         algorithmButton = view.findViewById(R.id.algorithm_button)
         orientationButton = view.findViewById(R.id.orientation_button)
+        historyButton = view.findViewById(R.id.history_button)
 
         takePhotoButton.setOnClickListener{
             Toast.makeText(requireContext(), "User will be directed to Camera app to take photo", Toast.LENGTH_SHORT).show()
@@ -53,6 +57,15 @@ class MainFragment :  Fragment(){
                 .addToBackStack(null)
                 .commit()
 
+        }
+
+        historyButton.setOnClickListener {
+            val fragment = ImageCreationFragment.newInstance()
+            requireActivity().supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.content_frame, fragment)
+                .addToBackStack(null)
+                .commit()
         }
 
         generateButton.visibility = View.INVISIBLE

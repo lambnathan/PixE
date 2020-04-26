@@ -1,7 +1,9 @@
 package com.imageaccident.pixe
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +12,9 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import java.io.File
+import java.util.*
+
 
 class GeneratedFragment : Fragment() {
     private var logTag = "ImageAccident.GenFrag"
@@ -37,6 +42,14 @@ class GeneratedFragment : Fragment() {
         saveButton.setOnClickListener { Toast.makeText(requireContext(), "Save options here!", Toast.LENGTH_SHORT).show() }
 
         return view
+    }
+
+    private fun saveImage(bitmap: Bitmap) {
+        val root = Environment.getExternalStorageDirectory().toString()
+        val saveDir = File(root + "/pixe_photos")
+        saveDir.mkdirs()
+        val gen = Random()
+        var temp = gen.nextInt()
     }
 
 }
