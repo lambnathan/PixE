@@ -11,8 +11,11 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import java.io.File
+import java.io.FileOutputStream
+import java.lang.Exception
 import java.util.*
 
 
@@ -38,18 +41,52 @@ class GeneratedFragment : Fragment() {
         resetButton.setOnClickListener {
             startActivity(Intent(requireContext(), MainActivity::class.java))
         }
+
         shareButton.setOnClickListener { Toast.makeText(requireContext(), "Share options here!", Toast.LENGTH_SHORT).show() }
-        saveButton.setOnClickListener { Toast.makeText(requireContext(), "Save options here!", Toast.LENGTH_SHORT).show() }
+        saveButton.setOnClickListener {
+
+            val result = saveImage(imageView.drawable.toBitmap())
+            if (result) {
+                Toast.makeText(requireContext(), "Saved successfully!", Toast.LENGTH_SHORT).show()
+            }
+            else {
+                Toast.makeText(requireContext(), "Error saving, try again.", Toast.LENGTH_SHORT).show()
+            }
+        }
 
         return view
     }
 
-    private fun saveImage(bitmap: Bitmap) {
+    private fun saveImage(bitmap: Bitmap) : Boolean {
         val root = Environment.getExternalStorageDirectory().toString()
-        val saveDir = File(root + "/pixe_photos")
+        val saveDir = File(root)
         saveDir.mkdirs()
+
         val gen = Random()
-        var temp = gen.nextInt()
+        var temp = gen.nextInt(99999)
+        val filename = "img$temp.jpg"
+
+        val file = File(saveDir, filename)
+        if (file.exists()) {
+            file.delete()
+        }
+
+        try {
+            val output = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output)
+
+            output.flush()
+            output.close()
+            return true
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+            Log.d(logTag, e.stackTrace.toString())
+            return false
+        }
     }
+
+
+
 
 }
