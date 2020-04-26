@@ -2,6 +2,7 @@ package com.imageaccident.pixe
 
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -25,6 +26,7 @@ class GeneratedFragment : Fragment() {
     private lateinit var resetButton : Button
     private lateinit var shareButton : Button
     private lateinit var saveButton: Button
+    private var imagePath: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,7 +44,7 @@ class GeneratedFragment : Fragment() {
             startActivity(Intent(requireContext(), MainActivity::class.java))
         }
 
-        shareButton.setOnClickListener { Toast.makeText(requireContext(), "Share options here!", Toast.LENGTH_SHORT).show() }
+        shareButton.setOnClickListener {sendImage()}
         saveButton.setOnClickListener {
 
             val result = saveImage(imageView.drawable.toBitmap())
@@ -57,9 +59,26 @@ class GeneratedFragment : Fragment() {
         return view
     }
 
+    private fun sendImage() {
+        if(imagePath == null) {
+            Toast.makeText(requireContext(), "You must save the image before sending!", Toast.LENGTH_SHORT).show()
+            return
+        }
+        try {
+            var sendPic = Intent(Intent.ACTION_SEND)
+            val path = "file://$imagePath"
+            sendPic.putExtra(Intent.EXTRA_STREAM, Uri.parse(path))
+            sendPic.setType("image/jpg")
+            startActivity(sendPic)
+        }catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(requireContext(), "Error sending image", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun saveImage(bitmap: Bitmap) : Boolean {
         val root = Environment.getExternalStorageDirectory().toString()
-        val saveDir = File(root)
+        val saveDir = File(root + "/pixe_photos/")
         saveDir.mkdirs()
 
         val gen = Random()
@@ -74,6 +93,7 @@ class GeneratedFragment : Fragment() {
         try {
             val output = FileOutputStream(file)
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output)
+            imagePath = file.absolutePath
 
             output.flush()
             output.close()
