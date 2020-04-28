@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -20,7 +21,7 @@ import java.lang.Exception
 import java.util.*
 
 
-class GeneratedFragment : Fragment() {
+class GeneratedFragment(private val algorithm: String, private val orientation: String, private val imageUri: Uri) : Fragment() {
     private var logTag = "ImageAccident.GenFrag"
     private lateinit var imageView : ImageView
     private lateinit var resetButton : Button
@@ -55,6 +56,9 @@ class GeneratedFragment : Fragment() {
                 Toast.makeText(requireContext(), "Error saving, try again.", Toast.LENGTH_SHORT).show()
             }
         }
+
+        //display the chose/take image:
+        imageView.setImageURI(imageUri)
 
         return view
     }

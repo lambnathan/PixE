@@ -1,6 +1,10 @@
 package com.imageaccident.pixe
 
+import android.app.Activity.RESULT_OK
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.service.autofill.FillEventHistory
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,6 +18,9 @@ import com.imageaccident.pixe.data.ImageCreation
 import com.imageaccident.pixe.data.ImageCreationFragment
 import com.imageaccident.pixe.data.ImageRepository
 
+private const val PICK_IMAGE_ID = 1
+private const val TAKE_PICTURE_ID = 2
+
 class MainFragment :  Fragment(){
     private val logTag = "ImageAccident.MainFrag"
     private lateinit var takePhotoButton : Button
@@ -23,6 +30,8 @@ class MainFragment :  Fragment(){
     private lateinit var orientationButton: Button
     private lateinit var historyButton: Button
     private lateinit var imageRepository: ImageRepository
+
+    private lateinit var imageUri: Uri
 
     private var hasChosenPicture: Boolean = false
     private var hasChosenAlgorithm: Boolean = false
@@ -53,6 +62,7 @@ class MainFragment :  Fragment(){
         }
         choosePictureButton.setOnClickListener{
             Toast.makeText(requireContext(), "User will be directed to Photo Gallery app to choose picture", Toast.LENGTH_SHORT).show()
+            pickImageFromGallery()
             hasChosenPicture = true
             checkGenerateButton()
         }
@@ -63,7 +73,9 @@ class MainFragment :  Fragment(){
                 version = "FREE")
             imageRepository.addImageCreation(newCreation)
 
-            val fragment = GeneratedFragment()
+            //generated fragment needs an imageUri to the image to use,
+            //the algorithm to use, and the orientation
+            val fragment = GeneratedFragment(algorithm, orientation, imageUri)
             requireActivity().supportFragmentManager
                 .beginTransaction()
                 .replace(R.id.content_frame, fragment)
@@ -93,6 +105,24 @@ class MainFragment :  Fragment(){
     private fun checkGenerateButton(){
         if(hasChosenAlgorithm && hasChosenOrientation && hasChosenPicture){
             generateButton.visibility = View.VISIBLE
+        }
+    }
+
+    //creates implicit intent to
+    //choose the image from the gallery
+    fun pickImageFromGallery(){
+        startActivityForResult(Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI), PICK_IMAGE_ID)
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if(resultCode == RESULT_OK && data != null){
+            if(requestCode == PICK_IMAGE_ID){
+                imageUri = data.data!!
+            }
+            else{ //must be TAKE_PICTURE_ID, for the camera
+
+            }
         }
     }
 
