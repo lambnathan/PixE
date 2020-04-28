@@ -1,7 +1,9 @@
 package com.imageaccident.pixe
 
+import android.content.ContentResolver
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -58,10 +60,28 @@ class GeneratedFragment(private val algorithm: String, private val orientation: 
         }
 
         //display the chose/take image:
-        imageView.setImageURI(imageUri)
+        //imageView.setImageURI(imageUri)
+//        val inputStream = requireActivity().contentResolver.openInputStream(imageUri)
+//        val drawable = Drawable.createFromStream(inputStream, imageUri.toString())
+//        imageView.setImageBitmap(drawable.toBitmap())
+        Log.d(logTag, "URI: ${imageUri.path}")
 
         return view
     }
+
+    override fun onResume() {
+        super.onResume()
+        sortImage()
+    }
+
+    //create a pixel sorter object with specified algorithm and orientation
+    //and get the sorted image
+    private fun sortImage(){
+        val pixelSorter = PixelSorter(algorithm, orientation, imageUri, requireContext())
+        val bitmap: Bitmap = pixelSorter.generateImage()
+        Log.d(logTag, "gneerated size: ${bitmap.width}, ${bitmap.height}")
+        imageView.setImageBitmap(bitmap) //display the sorted image
+}
 
     private fun sendImage() {
         if(imagePath == null) {
