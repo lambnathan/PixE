@@ -7,9 +7,9 @@
     <string name="upgrade_label">Upgrade</string>
     <string name="generate_label">Generate</string>
     <string name="algorithm_label">Algorithm</string>
-    <string name="algo_rgb">Sort by RGB</string>
-    <string name="algo_hue">Sort by hue</string>
-    <string name="algo_gamma">Sort by gamma</string>
+    <string name="algo_red">Sort by red value</string>
+    <string name="algo_blue">Sort by blue value</string>
+    <string name="algo_green">Sort by green value</string>
     <string name="orientation_vertical">Vertical</string>
     <string name="orientation_horizontal">Horizontal</string>
     <string name="orientation_label">Orientation</string>

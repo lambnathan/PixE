@@ -61,7 +61,7 @@ class MainFragment :  Fragment(){
             checkGenerateButton()
         }
         choosePictureButton.setOnClickListener{
-            Toast.makeText(requireContext(), "User will be directed to Photo Gallery app to choose picture", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(requireContext(), "User will be directed to Photo Gallery app to choose picture", Toast.LENGTH_SHORT).show()
             pickImageFromGallery()
             hasChosenPicture = true
             checkGenerateButton()
@@ -131,22 +131,22 @@ class MainFragment :  Fragment(){
         popupMenu.menuInflater.inflate(R.menu.algorithm_popup_menu, popupMenu.menu)
         popupMenu.setOnMenuItemClickListener {item ->
             when(item.itemId){
-                R.id.sort_rgb ->{
+                R.id.sort_red ->{
                     Toast.makeText(requireContext(), "You Clicked : " + item.title, Toast.LENGTH_SHORT).show()
                     hasChosenAlgorithm = true
-                    algorithm = "RGB"
+                    algorithm = "red"
                     checkGenerateButton()
                 }
-                R.id.sort_hue -> {
+                R.id.sort_blue -> {
                     Toast.makeText(requireContext(), "You Clicked : " + item.title, Toast.LENGTH_SHORT).show()
                     hasChosenAlgorithm = true
-                    algorithm = "HUE"
+                    algorithm = "blue"
                     checkGenerateButton()
                 }
-                R.id.sort_gamma -> {
+                R.id.sort_green -> {
                     Toast.makeText(requireContext(), "You Clicked : " + item.title, Toast.LENGTH_SHORT).show()
                     hasChosenAlgorithm = true
-                    algorithm = "GAMMA"
+                    algorithm = "green"
                     checkGenerateButton()
                 }
             }
