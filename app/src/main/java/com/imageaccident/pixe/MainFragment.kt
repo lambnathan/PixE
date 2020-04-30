@@ -2,8 +2,11 @@ package com.imageaccident.pixe
 
 import android.app.Activity.RESULT_OK
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.service.autofill.FillEventHistory
 import android.util.Log
@@ -11,12 +14,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import com.imageaccident.pixe.data.ImageCreation
 import com.imageaccident.pixe.data.ImageCreationFragment
 import com.imageaccident.pixe.data.ImageRepository
+import java.io.File
 
 private const val PICK_IMAGE_ID = 1
 private const val TAKE_PICTURE_ID = 2
@@ -30,8 +36,11 @@ class MainFragment :  Fragment(){
     private lateinit var orientationButton: Button
     private lateinit var historyButton: Button
     private lateinit var imageRepository: ImageRepository
+    private lateinit var imagePreview: ImageView
 
     private lateinit var imageUri: Uri
+    private lateinit var captureUri: Uri
+    private lateinit var captureFile: File
 
     private var hasChosenPicture: Boolean = false
     private var hasChosenAlgorithm: Boolean = false
@@ -52,11 +61,12 @@ class MainFragment :  Fragment(){
         algorithmButton = view.findViewById(R.id.algorithm_button)
         orientationButton = view.findViewById(R.id.orientation_button)
         historyButton = view.findViewById(R.id.history_button)
-
+        imagePreview = view.findViewById(R.id.image_preview)
         imageRepository = ImageRepository.getInstance(requireContext())
 
         takePhotoButton.setOnClickListener{
             Toast.makeText(requireContext(), "User will be directed to Camera app to take photo", Toast.LENGTH_SHORT).show()
+            requestImageFromCamera()
             hasChosenPicture = true
             checkGenerateButton()
         }
@@ -108,6 +118,17 @@ class MainFragment :  Fragment(){
         }
     }
 
+    private fun requestImageFromCamera(){
+
+        val dir = requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        Log.d(logTag, "The directory given is ${dir}")
+        captureFile = File.createTempFile("camera_capture", ".jpg", dir)
+        captureUri = FileProvider.getUriForFile(requireActivity(), "com.imageaccident.pixe.fileprovider", captureFile)
+        val i = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        i.putExtra(MediaStore.EXTRA_OUTPUT, captureUri)
+        startActivityForResult(i, TAKE_PICTURE_ID)
+    }
+
     //creates implicit intent to
     //choose the image from the gallery
     fun pickImageFromGallery(){
@@ -116,11 +137,28 @@ class MainFragment :  Fragment(){
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if(resultCode == RESULT_OK && data != null){
-            if(requestCode == PICK_IMAGE_ID){
+
+        Log.d(logTag, "returned result with code ${requestCode} and result ${resultCode}")
+
+
+        if(resultCode == RESULT_OK ){
+            Log.d(logTag, "returned result for selecting picture ")
+            if(requestCode == PICK_IMAGE_ID && data != null){
                 imageUri = data.data!!
+                imagePreview.setImageURI(imageUri)
             }
-            else{ //must be TAKE_PICTURE_ID, for the camera
+            if(requestCode == TAKE_PICTURE_ID){
+                val dir = requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+                Log.d(logTag, "returned result for taking picture " + (dir.toString() +"camera_capture"+ ".jpg"))
+                Log.d(logTag, "path chould be ${captureFile!!.getAbsolutePath()}")
+
+                captureUri = FileProvider.getUriForFile(requireActivity(), "com.imageaccident.pixe.fileprovider", captureFile)
+                imagePreview.setImageURI(captureUri)
+
+                imageUri = captureUri
+
+                //val myBitmap = BitmapFactory.decodeFile(captureFile!!.getAbsolutePath())
+                //imagePreview.setImageBitmap(myBitmap)
 
             }
         }
