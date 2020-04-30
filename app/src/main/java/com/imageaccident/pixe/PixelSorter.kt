@@ -1,16 +1,19 @@
 package com.imageaccident.pixe
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color.*
+import android.graphics.Matrix
 import android.net.Uri
+import android.util.DisplayMetrics
 import android.util.Log
 import java.io.InputStream
 
 private const val logTag = "ImageAccident.PixelSort"
 
-class PixelSorter(private val algorithm: String, private val orientation: String, private val imageUri: Uri, private val context: Context){
+class PixelSorter(private val algorithm: String, private val orientation: String, private val imageUri: Uri, private val context: Context, private val activity: Activity){
     private lateinit var bitmapOptions: BitmapFactory.Options
     private lateinit var inputStream: InputStream
 
@@ -18,21 +21,45 @@ class PixelSorter(private val algorithm: String, private val orientation: String
     private var originalHeight = 0
     private var originalType: String? = ""
 
+    private var generateWidth: Int = 0
+    private var generateHeight: Int = 0
+
     fun generateImage(): Bitmap{
         Log.d(logTag, "uri: ${imageUri.path}")
         readDimensionsAndType()
-        val scaledBitmap: Bitmap = decodeSampleBitmap(100, 100)
+        getRequiredWidthAndHeight()
+        var scaledBitmap: Bitmap = decodeSampleBitmap(generateWidth, generateHeight)
         val sortedBitmap = getSortedBitmap(scaledBitmap)
         return sortedBitmap
     }
 
+    private fun getRequiredWidthAndHeight(){
+        val displayMetrics = DisplayMetrics()
+        activity.windowManager.defaultDisplay.getRealMetrics(displayMetrics)
+        generateWidth = displayMetrics.widthPixels //image fills width
+        generateHeight = displayMetrics.heightPixels / 3 //imageview fills roughly a third of the screen's height
+        Log.d(logTag, "to display width: ${generateWidth}, to display height: ${generateHeight}")
+    }
+
     //pixel sorting happends here
     private fun getSortedBitmap(bitmap: Bitmap): Bitmap{
-        val width = bitmap.width
-        val height = bitmap.height
+        var width = bitmap.width
+        var height = bitmap.height
         //get the pixels and store in an array
         var pixels = IntArray(width * height)
-        bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
+        if(orientation == "Vertical"){
+            val matrix = Matrix()
+            matrix.postRotate(90f)
+            val tempBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true)
+            //since we rotated, swap width and height (only do this for vertical, because we rotated)
+            val temp = width
+            width = height
+            height = temp
+            tempBitmap.getPixels(pixels, 0, width,0, 0, width, height)
+        }
+        else{
+            bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
+        }
 
         //depending on what color they want to sort by, create another array only with that color value
         //var colorPixels = IntArray(pixels.size)
@@ -52,29 +79,33 @@ class PixelSorter(private val algorithm: String, private val orientation: String
         }
 
         var sortedPixels = IntArray(pixels.size)
-        if(orientation == "Horizontal"){
-            sortedPixels = sortHorizontal(pixelMap, width, height)
-        }
-        else if(orientation == "Vertical"){
+        sortedPixels = getSortedPixels(pixelMap, width, height)
 
+        if(orientation == "Vertical"){//rotate the pixels back to original
+            val matrix = Matrix()
+            matrix.postRotate(-90f)
+            val tempBitmap = Bitmap.createBitmap(sortedPixels, width, height, Bitmap.Config.ARGB_8888)
+            return Bitmap.createBitmap(tempBitmap, 0, 0, width, height, matrix, true)
+        }
+        else{
+            return Bitmap.createBitmap(sortedPixels, width, height, Bitmap.Config.ARGB_8888)
         }
 
-        return Bitmap.createBitmap(sortedPixels, width, height, Bitmap.Config.ARGB_8888)
     }
 
-    private fun sortHorizontal(pixelMap: ArrayList<PixelMap>, width: Int, height: Int): IntArray{
+    private fun getSortedPixels(pixelMap: ArrayList<PixelMap>, width: Int, height: Int): IntArray{
         //get a row of pixels, then sort that row
         //do this for all rows
         var sorted = ArrayList<PixelMap>()
-        var offset = 0
+        var index = 0
         for(i in 0..height-1){//go through all rows
-            val temp = ArrayList<PixelMap>()
-            for(j in 0..width-1){ //get an individual row
-                temp.add(pixelMap[i + offset])
+            val row = ArrayList<PixelMap>()
+            for(j in 0..width-1){
+                index = i * width + j
+                row.add(pixelMap[index])
             }
-            var sortedList = temp.sortedWith(compareBy({it.colorPixel})) //sort based on color
-            sorted.addAll(sortedList)
-            offset += width
+            val sortedRow = row.sortedWith(compareBy({it.colorPixel}))
+            sorted.addAll(sortedRow)
         }
 
         //after going through all the mapped pixels, just isolate orignal pixels
@@ -100,7 +131,7 @@ class PixelSorter(private val algorithm: String, private val orientation: String
         originalHeight = bitmapOptions.outHeight
         originalWidth = bitmapOptions.outWidth
         originalType = bitmapOptions.outMimeType
-        Log.d(logTag, "width: ${originalWidth}, height: ${originalHeight}")
+        Log.d(logTag, "original pic width: ${originalWidth}, original pic height: ${originalHeight}")
     }
 
     //load a scaled down version into memory
@@ -110,13 +141,14 @@ class PixelSorter(private val algorithm: String, private val orientation: String
         inputStream = context.contentResolver.openInputStream(imageUri)!!
         val testBitmap = BitmapFactory.decodeStream(inputStream, null, bitmapOptions)
         if(testBitmap == null){
-            Log.d(logTag, "first is NULLLLL")
+            //Log.d(logTag, "first is NULLLLL")
         }
         val inSampleSize = calculateInSampleSize(reqWidth, reqHeight)
         bitmapOptions.inJustDecodeBounds = false
         bitmapOptions.inSampleSize = inSampleSize
         inputStream = context.contentResolver.openInputStream(imageUri)!!
         val finalBitmap = BitmapFactory.decodeStream(inputStream, null, bitmapOptions)
+        Log.d(logTag, "decode width: ${finalBitmap?.width}, decode height: ${finalBitmap?.height}")
         //val scaledAgain = Bitmap.createScaledBitmap(finalBitmap!!, originalWidth, originalHeight, false)
         return finalBitmap!!
         //return scaledAgain

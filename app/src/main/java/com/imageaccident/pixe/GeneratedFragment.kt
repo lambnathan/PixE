@@ -77,7 +77,7 @@ class GeneratedFragment(private val algorithm: String, private val orientation: 
     //create a pixel sorter object with specified algorithm and orientation
     //and get the sorted image
     private fun sortImage(){
-        val pixelSorter = PixelSorter(algorithm, orientation, imageUri, requireContext())
+        val pixelSorter = PixelSorter(algorithm, orientation, imageUri, requireContext(), requireActivity())
         val bitmap: Bitmap = pixelSorter.generateImage()
         Log.d(logTag, "gneerated size: ${bitmap.width}, ${bitmap.height}")
         imageView.setImageBitmap(bitmap) //display the sorted image
