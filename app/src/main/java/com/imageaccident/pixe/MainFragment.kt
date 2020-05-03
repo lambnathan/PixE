@@ -4,6 +4,7 @@ import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -23,6 +24,7 @@ import com.imageaccident.pixe.data.ImageCreation
 import com.imageaccident.pixe.data.ImageCreationFragment
 import com.imageaccident.pixe.data.ImageRepository
 import java.io.File
+import java.lang.Exception
 
 private const val PICK_IMAGE_ID = 1
 private const val TAKE_PICTURE_ID = 2
@@ -77,6 +79,13 @@ class MainFragment :  Fragment(){
             checkGenerateButton()
         }
         generateButton.setOnClickListener{
+            // play generated sound
+            try {
+                val mediaPlayer = MediaPlayer.create(requireContext(), R.raw.generate_sound)
+                mediaPlayer.start()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
             val newCreation = ImageCreation(
                 algorithm = algorithm,
                 orientation = orientation,
