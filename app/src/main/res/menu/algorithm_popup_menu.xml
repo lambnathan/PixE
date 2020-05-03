@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/sort_rgb"
-        android:title="@string/algo_rgb"/>
+        android:id="@+id/sort_red"
+        android:title="@string/algo_red"/>
     <item
-        android:id="@+id/sort_hue"
-        android:title="@string/algo_hue"/>
+        android:id="@+id/sort_blue"
+        android:title="@string/algo_blue"/>
     <item
-        android:id="@+id/sort_gamma"
-        android:title="@string/algo_gamma"/>
+        android:id="@+id/sort_green"
+        android:title="@string/algo_green"/>
 
 </menu>
