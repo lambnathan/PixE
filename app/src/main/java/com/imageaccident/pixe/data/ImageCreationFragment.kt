@@ -62,7 +62,7 @@ class ImageCreationFragment : Fragment() {
                 history?.let {
                     Log.d(logTag, "Got history ${history.size}")
                     imageCreationList = history
-                    updateUI(imageCreationList)
+                    updateUI(history)
                 }
             }
         )
@@ -74,8 +74,12 @@ class ImageCreationFragment : Fragment() {
         val algorithmTextView : TextView = itemView.findViewById(R.id.algorithm_text_view)
         val orientationTextView : TextView = itemView.findViewById(R.id.orientation_text_view)
         val versionTextView : TextView = itemView.findViewById(R.id.version_text_view)
+        init {
+            Log.d(logTag, "holder()")
+        }
 
         fun bind(item: ImageCreation) {
+            Log.d(logTag, "holder.bind()")
             this.item = item
             dateTextView.text = this.item.date.toString()
             algorithmTextView.text = this.item.algorithm
@@ -90,7 +94,9 @@ class ImageCreationFragment : Fragment() {
             return CreationHolder(view)
         }
 
-        override fun getItemCount(): Int = list.size
+        override fun getItemCount(): Int {
+            return list.size
+        }
 
         override fun onBindViewHolder(holder: CreationHolder, position: Int) {
             holder.bind(list[position])
