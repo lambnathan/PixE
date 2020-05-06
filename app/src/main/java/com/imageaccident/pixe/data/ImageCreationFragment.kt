@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentPagerAdapter
@@ -74,6 +75,7 @@ class ImageCreationFragment : Fragment() {
         val algorithmTextView : TextView = itemView.findViewById(R.id.algorithm_text_view)
         val orientationTextView : TextView = itemView.findViewById(R.id.orientation_text_view)
         val versionTextView : TextView = itemView.findViewById(R.id.version_text_view)
+        val imageView : ImageView = itemView.findViewById(R.id.history_iamge_view)
         init {
             Log.d(logTag, "holder()")
         }
@@ -85,6 +87,7 @@ class ImageCreationFragment : Fragment() {
             algorithmTextView.text = this.item.algorithm
             orientationTextView.text = this.item.orientation
             versionTextView.text = this.item.version
+            imageView.setImageURI(this.item.uri)
         }
     }
 

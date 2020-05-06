@@ -5,7 +5,7 @@ import androidx.room.*
 
 private const val DB_NAME = "image-database"
 
-@Database(entities = [ImageCreation::class], version=2)
+@Database(entities = [ImageCreation::class], version=3)
 @TypeConverters(ImageTypeConverters::class)
 abstract class ImageDatabase : RoomDatabase() {
 
