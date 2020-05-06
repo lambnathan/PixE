@@ -141,9 +141,19 @@ class MainFragment :  Fragment(){
             "com.imageaccident.pixe.fileprovider",
             captureFile
         )
-        val i = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        i.putExtra(MediaStore.EXTRA_OUTPUT, captureUri)
-        startActivityForResult(i, TAKE_PICTURE_ID)
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) ==
+            PackageManager.PERMISSION_GRANTED){
+                val i = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                i.putExtra(MediaStore.EXTRA_OUTPUT, captureUri)
+                startActivityForResult(i, TAKE_PICTURE_ID)
+        }else{
+            ActivityCompat.requestPermissions(
+                requireActivity(), arrayOf(
+                    Manifest.permission.CAMERA
+                ), PermissionChecker.PERMISSION_GRANTED
+            )
+        }
+
 
     }
 
