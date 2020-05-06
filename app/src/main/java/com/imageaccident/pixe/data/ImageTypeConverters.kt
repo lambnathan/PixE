@@ -1,5 +1,6 @@
 package com.imageaccident.pixe.data
 
+import android.net.Uri
 import androidx.room.TypeConverter
 import java.util.*
 
@@ -18,15 +19,13 @@ class ImageTypeConverters {
     }
 
     @TypeConverter
-    fun fromDate(date: Date?): Long? {
-        return date?.time
+    fun fromUri(uri: Uri?): String? {
+        return uri?.toString()
     }
 
     @TypeConverter
-    fun toDate(millisSinceEpoch: Long?): Date? {
-        return millisSinceEpoch?.let {
-            Date(it)
-        }
+    fun toUri(str: String?): Uri? {
+        return Uri.parse(str)
     }
 
 }
