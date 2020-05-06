@@ -29,6 +29,8 @@ import com.imageaccident.pixe.data.ImageCreation
 import com.imageaccident.pixe.data.ImageCreationFragment
 import com.imageaccident.pixe.data.ImageRepository
 import java.io.File
+import java.io.FileOutputStream
+import java.net.URI
 import java.util.Collections.rotate
 
 
@@ -196,9 +198,15 @@ class MainFragment :  Fragment(){
             if(requestCode == TAKE_PICTURE_ID){
                 val dir = requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
                 Log.d(logTag, "returned result for taking picture " + (dir.toString() +"camera_capture"+ ".jpg"))
-                Log.d(logTag, "path chould be ${captureFile!!.absolutePath}")
+                Log.d(logTag, "path should be ${captureFile!!.absolutePath}")
+
 
                 captureUri = FileProvider.getUriForFile(requireActivity(), "com.imageaccident.pixe.fileprovider", captureFile)
+                var tempfile = File.createTempFile("rotated_capture", ".jpg", dir)
+                var tempUri = FileProvider.getUriForFile(
+                    requireActivity(),
+                    "com.imageaccident.pixe.fileprovider",
+                    tempfile)
                 try{
                     val stream = requireActivity().contentResolver.openInputStream(captureUri)
                     val bitmap = BitmapFactory.decodeStream(stream)
@@ -220,13 +228,31 @@ class MainFragment :  Fragment(){
                     matrix.setRotate(rotate.toFloat())
 
                     val bitRot = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+
+
+
+                    val fout = FileOutputStream(tempfile)
+                    bitRot.compress(Bitmap.CompressFormat.JPEG, 100, fout)
+                    fout.flush()
+                    fout.close()
+
                     imagePreview.setImageBitmap(bitRot)
+                    captureFile
+                    if (captureFile.exists()) {
+                        captureFile.delete()
+                    }
+                    captureFile = tempfile
+                    captureUri = tempUri
+
 
                 }catch (e:Exception){
                     Log.d(logTag, "yeah its not fucking working")
                     imagePreview.setImageURI(captureUri)
+
                 }
                 imageUri = captureUri
+
+
 
 
 
