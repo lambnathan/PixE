@@ -116,7 +116,7 @@ class MainFragment :  Fragment(){
                 .commit()
         }
 
-        generateButton.visibility = View.INVISIBLE
+        generateButton.isEnabled = false
 
 
         algorithmButton.setOnClickListener{ showAlgoMenu(algorithmButton)}
@@ -127,7 +127,7 @@ class MainFragment :  Fragment(){
 
     private fun checkGenerateButton(){
         if(hasChosenAlgorithm && hasChosenOrientation && hasChosenPicture){
-            generateButton.visibility = View.VISIBLE
+            generateButton.isEnabled = true
         }
     }
 
