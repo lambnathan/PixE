@@ -10,6 +10,7 @@
         android:id="@+id/date_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:text="Date"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -19,9 +20,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="60dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:text="Algorithm"
         app:layout_constraintEnd_toStartOf="@+id/orientation_text_view"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/date_text_view"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -29,7 +32,8 @@
         android:id="@+id/orientation_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="20dp"
         android:text="orientation"
         app:layout_constraintEnd_toStartOf="@+id/version_text_view"
         app:layout_constraintTop_toTopOf="parent" />
@@ -38,7 +42,18 @@
         android:id="@+id/version_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:text="VERSION"
+        app:layout_constraintEnd_toStartOf="@+id/history_iamge_view"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/history_iamge_view"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

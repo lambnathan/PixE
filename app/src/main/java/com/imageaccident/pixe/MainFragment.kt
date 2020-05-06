@@ -1,7 +1,9 @@
 package com.imageaccident.pixe
 
+import android.Manifest
 import android.app.Activity.RESULT_OK
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaPlayer
@@ -18,7 +20,9 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
+import androidx.core.content.PermissionChecker
 import androidx.fragment.app.Fragment
 import com.imageaccident.pixe.data.ImageCreation
 import com.imageaccident.pixe.data.ImageCreationFragment
@@ -64,7 +68,6 @@ class MainFragment :  Fragment(){
         orientationButton = view.findViewById(R.id.orientation_button)
         historyButton = view.findViewById(R.id.history_button)
         imagePreview = view.findViewById(R.id.image_preview)
-        imageRepository = ImageRepository.getInstance(requireContext())
 
         takePhotoButton.setOnClickListener{
             Toast.makeText(requireContext(), "User will be directed to Camera app to take photo", Toast.LENGTH_SHORT).show()
@@ -86,11 +89,7 @@ class MainFragment :  Fragment(){
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-            val newCreation = ImageCreation(
-                algorithm = algorithm,
-                orientation = orientation,
-                version = "FREE")
-            imageRepository.addImageCreation(newCreation)
+
 
             //generated fragment needs an imageUri to the image to use,
             //the algorithm to use, and the orientation
@@ -132,16 +131,39 @@ class MainFragment :  Fragment(){
         val dir = requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         Log.d(logTag, "The directory given is ${dir}")
         captureFile = File.createTempFile("camera_capture", ".jpg", dir)
-        captureUri = FileProvider.getUriForFile(requireActivity(), "com.imageaccident.pixe.fileprovider", captureFile)
+        captureUri = FileProvider.getUriForFile(
+            requireActivity(),
+            "com.imageaccident.pixe.fileprovider",
+            captureFile
+        )
         val i = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         i.putExtra(MediaStore.EXTRA_OUTPUT, captureUri)
         startActivityForResult(i, TAKE_PICTURE_ID)
+
     }
 
     //creates implicit intent to
     //choose the image from the gallery
     fun pickImageFromGallery(){
-        startActivityForResult(Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI), PICK_IMAGE_ID)
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+            PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) ==
+            PackageManager.PERMISSION_GRANTED) {
+
+            startActivityForResult(
+                Intent(
+                    Intent.ACTION_PICK,
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                ), PICK_IMAGE_ID
+            )
+        } else {
+            ActivityCompat.requestPermissions(
+                requireActivity(), arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ), PermissionChecker.PERMISSION_GRANTED
+            )
+        }
     }
 
 

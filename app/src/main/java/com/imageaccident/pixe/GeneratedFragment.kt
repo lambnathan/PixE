@@ -27,6 +27,8 @@ import java.lang.Exception
 import java.util.*
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
+import com.imageaccident.pixe.data.ImageCreation
+import com.imageaccident.pixe.data.ImageRepository
 
 
 class GeneratedFragment(private val algorithm: String, private val orientation: String, private val imageUri: Uri) : Fragment() {
@@ -35,9 +37,15 @@ class GeneratedFragment(private val algorithm: String, private val orientation: 
     private lateinit var resetButton : Button
     private lateinit var shareButton : Button
     private lateinit var saveButton: Button
+    private lateinit var imageRepository: ImageRepository
 
     private lateinit var saveFile: File
     private lateinit var saveUri: Uri
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        imageRepository = ImageRepository.getInstance(requireContext())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -100,24 +108,20 @@ class GeneratedFragment(private val algorithm: String, private val orientation: 
             return
         }
         try {
-//<<<<<<< HEAD
-            //val sendPic = Intent(Intent.ACTION_SEND)
-            //val path = "$imagePath"
             if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
                 PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) ==
                 PackageManager.PERMISSION_GRANTED) {
-                var sendPic = Intent(Intent.ACTION_SEND)
-                sendPic.putExtra(Intent.EXTRA_STREAM, saveUri)
-                sendPic.setType("image/jpg")
-                startActivity(sendPic)
 
-//
-//                Log.d(logTag, "HERE")
-//                sendPic.putExtra(Intent.EXTRA_STREAM, Uri.parse(path))
-//                sendPic.setType("image/jpg")
-//                Log.d(logTag, "THERE")
-//                startActivity(sendPic)
+                if (saveUri != null) {
+                    var sendPic = Intent(Intent.ACTION_SEND)
+                    sendPic.putExtra(Intent.EXTRA_STREAM, saveUri)
+                    sendPic.setType("image/jpg")
+                    startActivity(sendPic)
+                } else {
+                    Toast.makeText(requireContext(), "Image must be saved before sharing!", Toast.LENGTH_SHORT).show()
+                }
+
 
 
             } else {
@@ -139,12 +143,7 @@ class GeneratedFragment(private val algorithm: String, private val orientation: 
     }
 
     private fun saveImage(bitmap: Bitmap) : Boolean {
-//<<<<<<< HEAD
-//        val num = Random().nextInt(99999)
-//        val imageName = "img$num.jpg"
-//        val path = requireContext().getExternalFilesDir("image/*")
-//        imagePath = "$path/DCIM/$imageName"
-//
+
         try {
             if (ActivityCompat.checkSelfPermission(
                     requireContext(),
@@ -170,6 +169,12 @@ class GeneratedFragment(private val algorithm: String, private val orientation: 
                 )
                 val out = FileOutputStream(saveFile)
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
+                val newCreation = ImageCreation(
+                    algorithm = algorithm,
+                    orientation = orientation,
+                    version = "FREE",
+                    uri = saveUri)
+                imageRepository.addImageCreation(newCreation)
                 return true
 
 
