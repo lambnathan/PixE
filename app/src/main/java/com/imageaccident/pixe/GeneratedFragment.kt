@@ -42,6 +42,8 @@ class GeneratedFragment(private val algorithm: String, private val orientation: 
     private lateinit var saveFile: File
     private lateinit var saveUri: Uri
 
+    private var makeHistory: Boolean = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         imageRepository = ImageRepository.getInstance(requireContext())
@@ -169,12 +171,15 @@ class GeneratedFragment(private val algorithm: String, private val orientation: 
                 )
                 val out = FileOutputStream(saveFile)
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
-                val newCreation = ImageCreation(
-                    algorithm = algorithm,
-                    orientation = orientation,
-                    version = "FREE",
-                    uri = saveUri)
-                imageRepository.addImageCreation(newCreation)
+                if (makeHistory) {
+                    val newCreation = ImageCreation(
+                        algorithm = algorithm,
+                        orientation = orientation,
+                        version = "FREE",
+                        uri = saveUri
+                    )
+                    imageRepository.addImageCreation(newCreation)
+                }
                 return true
 
 
