@@ -1,6 +1,7 @@
 package com.imageaccident.pixe
 
 import android.Manifest
+import android.content.ContentResolver
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -169,8 +170,19 @@ class GeneratedFragment(private val algorithm: String, private val orientation: 
                     "com.imageaccident.pixe.fileprovider",
                     saveFile
                 )
+
+                val res = requireActivity().contentResolver
+                
+                MediaStore.Images.Media.insertImage(
+                    requireActivity().contentResolver,
+                    bitmap,
+                    filename,
+                    ""
+                )
+
                 val out = FileOutputStream(saveFile)
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
+
                 if (makeHistory) {
                     val newCreation = ImageCreation(
                         algorithm = algorithm,
