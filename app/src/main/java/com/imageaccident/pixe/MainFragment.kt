@@ -6,12 +6,13 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.media.ExifInterface
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.service.autofill.FillEventHistory
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -28,7 +29,11 @@ import com.imageaccident.pixe.data.ImageCreation
 import com.imageaccident.pixe.data.ImageCreationFragment
 import com.imageaccident.pixe.data.ImageRepository
 import java.io.File
-import java.lang.Exception
+import java.util.Collections.rotate
+
+
+
+
 
 private const val PICK_IMAGE_ID = 1
 private const val TAKE_PICTURE_ID = 2
@@ -136,9 +141,19 @@ class MainFragment :  Fragment(){
             "com.imageaccident.pixe.fileprovider",
             captureFile
         )
-        val i = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        i.putExtra(MediaStore.EXTRA_OUTPUT, captureUri)
-        startActivityForResult(i, TAKE_PICTURE_ID)
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) ==
+            PackageManager.PERMISSION_GRANTED){
+                val i = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                i.putExtra(MediaStore.EXTRA_OUTPUT, captureUri)
+                startActivityForResult(i, TAKE_PICTURE_ID)
+        }else{
+            ActivityCompat.requestPermissions(
+                requireActivity(), arrayOf(
+                    Manifest.permission.CAMERA
+                ), PermissionChecker.PERMISSION_GRANTED
+            )
+        }
+
 
     }
 
@@ -181,15 +196,39 @@ class MainFragment :  Fragment(){
             if(requestCode == TAKE_PICTURE_ID){
                 val dir = requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
                 Log.d(logTag, "returned result for taking picture " + (dir.toString() +"camera_capture"+ ".jpg"))
-                Log.d(logTag, "path chould be ${captureFile!!.getAbsolutePath()}")
+                Log.d(logTag, "path chould be ${captureFile!!.absolutePath}")
 
                 captureUri = FileProvider.getUriForFile(requireActivity(), "com.imageaccident.pixe.fileprovider", captureFile)
-                imagePreview.setImageURI(captureUri)
+                try{
+                    val stream = requireActivity().contentResolver.openInputStream(captureUri)
+                    val bitmap = BitmapFactory.decodeStream(stream)
+                    stream!!.close()
 
+                    val exif = ExifInterface(captureFile.absolutePath)
+                    val orientation: Int = exif.getAttributeInt(
+                        ExifInterface.TAG_ORIENTATION,
+                        ExifInterface.ORIENTATION_NORMAL
+                    )
+                    var rotate = 0
+                    when (orientation) {
+                        ExifInterface.ORIENTATION_ROTATE_270 -> rotate = 270
+                        ExifInterface.ORIENTATION_ROTATE_180 -> rotate = 180
+                        ExifInterface.ORIENTATION_ROTATE_90 -> rotate = 90
+                    }
+
+                    val matrix = Matrix()
+                    matrix.setRotate(rotate.toFloat())
+
+                    val bitRot = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+                    imagePreview.setImageBitmap(bitRot)
+
+                }catch (e:Exception){
+                    Log.d(logTag, "yeah its not fucking working")
+                    imagePreview.setImageURI(captureUri)
+                }
                 imageUri = captureUri
 
-                //val myBitmap = BitmapFactory.decodeFile(captureFile!!.getAbsolutePath())
-                //imagePreview.setImageBitmap(myBitmap)
+
 
             }
         }
